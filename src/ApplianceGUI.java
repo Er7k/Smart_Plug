@@ -1,5 +1,4 @@
 import se.mau.DA343A.VT25.projekt.Buffer;
-import se.mau.DA343A.VT25.projekt.ThreadHelp;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

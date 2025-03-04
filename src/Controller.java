@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Controller {
+public class Controller { // commit test
 
     private ServerGUI gui;
     private List<ApplianceGUI> clients;
