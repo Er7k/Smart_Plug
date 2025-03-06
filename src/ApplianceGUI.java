@@ -12,11 +12,15 @@ public class ApplianceGUI implements ChangeListener {
     private JLabel label;
     private Buffer<Double> buffer; // lagrar datan för värdena
     private int maxPower; // alla Appliances har olika maxpower
+    private int xLocation;
+    private int yLocation;
 
-    public ApplianceGUI(String title, int maxPower) {
+    public ApplianceGUI(String title, int maxPower, int xLocation, int yLocation) {
         this.title = title;
         this.buffer = new Buffer<>();
         this.maxPower = maxPower;
+        this.xLocation = xLocation;
+        this.yLocation = yLocation;
         createAndShowApplianceGUI();
     }
 
@@ -26,7 +30,7 @@ public class ApplianceGUI implements ChangeListener {
         frame.setSize(200, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        frame.setLocation(1100, 0);
+        frame.setLocation(xLocation, yLocation);
 
         slider = new JSlider(JSlider.VERTICAL, 0, maxPower, 0);
         slider.setPreferredSize(new Dimension(80, 400));
