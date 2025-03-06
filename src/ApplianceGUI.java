@@ -66,7 +66,7 @@ public class ApplianceGUI implements ChangeListener {
         } else {
             label.setText(("<html><div align='center'>" + title + "<br>(W) usage: <font color = 'red'>" + slider.getValue() + "</div></html>"));
         }
-        buffer.put((double) value); // lägger till värden i buffern när användaren ändrar värden
+        buffer.put((double) value); // lägger till värden i buffern när användaren ändrar värden.
         System.out.println("Added value to buffer: " + value); // debug
     }
 

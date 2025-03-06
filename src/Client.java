@@ -41,7 +41,7 @@ public class Client implements Runnable {
             while (true) {
                 double watt = buffer.get();
                 System.out.println("Sending watt usage: " + watt);
-                outputStream.writeDouble(watt); // int --> double
+                outputStream.writeDouble(watt); // int --> double.
                 outputStream.flush();
 
                 String input = inputStream.readUTF();

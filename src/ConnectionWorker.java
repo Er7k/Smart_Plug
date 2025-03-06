@@ -20,7 +20,7 @@ public class ConnectionWorker implements ListeningSocketConnectionWorker {
 
         try {
             while (true) {// håll anslutning öppen
-                double receivedWattUsage = dataInput.readDouble(); // int --> double
+                double receivedWattUsage = dataInput.readDouble(); // int --> double.
                 System.out.println("Received watt usage: " + receivedWattUsage); // debug - Stämmer ej? recieved watt usage är inte överens med totalConsumption
                 serverGUI.setTotalConsumption(receivedWattUsage);
 

@@ -50,7 +50,7 @@ public class Controller { // commit test
             for (ApplianceGUI client : appliances) {
                 totalConsumption += client.getCurrentConsumption();
             }
-            System.out.println("Total consumption: " + totalConsumption); // debug - stämmer överens med buffern
+            System.out.println("Total consumption: " + totalConsumption); // debug - stämmer överens med buffern.
 
             buffer.put((double) totalConsumption);
 
