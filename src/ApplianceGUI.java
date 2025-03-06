@@ -10,14 +10,12 @@ public class ApplianceGUI implements ChangeListener {
     private final String title;
     private JSlider slider;
     private JLabel label;
-    private Buffer<Double> buffer; // lagrar datan för värdena
     private int maxPower; // alla Appliances har olika maxpower
     private int xLocation;
     private int yLocation;
 
     public ApplianceGUI(String title, int maxPower, int xLocation, int yLocation) {
         this.title = title;
-        this.buffer = new Buffer<>();
         this.maxPower = maxPower;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
@@ -65,10 +63,9 @@ public class ApplianceGUI implements ChangeListener {
         } else {
             label.setText(("<html><div align='center'>" + title + "<br>(W) usage: <font color = 'red'>" + slider.getValue() + "</div></html>"));
         }
-        buffer.put((double) value); // Sätter in värdet
     }
 
-    public int getCurrentConsumption() { // hämtar värdet för appliance's användning
+    public double getCurrentConsumption() { // hämtar värdet för appliance's användning
         return slider.getValue();
     }
 }
