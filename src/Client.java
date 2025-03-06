@@ -13,7 +13,7 @@ public class Client implements Runnable {
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
     private boolean connected = false;
-    private Buffer buffer;
+     private Buffer<Double> buffer;
 
     public Client(Buffer<Double> buffer) {
         this.buffer = buffer;
@@ -37,23 +37,23 @@ public class Client implements Runnable {
             outputStream.flush();
 
             System.out.println("Authentication successful!");
-            connected = true;
 
-            while(connected) {
-
-                double watt = (double) buffer.get();
-                outputStream.writeInt((int) watt);
+            while (true) {
+                double watt = buffer.get();
+                System.out.println("Sending watt usage: " + watt);
+                outputStream.writeDouble(watt); // int --> double
                 outputStream.flush();
 
                 String input = inputStream.readUTF();
+                System.out.println("Received response: " + input); // Ingen input från servern fångas hämtas?
                 System.out.println(input);
 
                 Thread.sleep(1000);
             }
 
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-            //Kommer alltid in här efter första connection till servern
+            System.out.println("Connection lost"); // fångas här :(
+            e.printStackTrace();
         }
     }
 }

@@ -13,12 +13,14 @@ public class ApplianceGUI implements ChangeListener {
     private int maxPower; // alla Appliances har olika maxpower
     private int xLocation;
     private int yLocation;
+    private Buffer<Double> buffer; // tillagd
 
     public ApplianceGUI(String title, int maxPower, int xLocation, int yLocation) {
         this.title = title;
         this.maxPower = maxPower;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
+        this.buffer = new Buffer<>();
         createAndShowApplianceGUI();
     }
 
@@ -52,6 +54,7 @@ public class ApplianceGUI implements ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent e) {
+
         int value = slider.getValue();
 
         if (value < 200) {
@@ -63,9 +66,15 @@ public class ApplianceGUI implements ChangeListener {
         } else {
             label.setText(("<html><div align='center'>" + title + "<br>(W) usage: <font color = 'red'>" + slider.getValue() + "</div></html>"));
         }
+        buffer.put((double) value); // lägger till värden i buffern när användaren ändrar värden
+        System.out.println("Added value to buffer: " + value); // debug
     }
 
     public double getCurrentConsumption() { // hämtar värdet för appliance's användning
         return slider.getValue();
+    }
+
+    public Buffer<Double> getBuffer() {
+        return buffer;
     }
 }
