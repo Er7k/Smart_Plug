@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Controller { // commit test
 
-    private Buffer<Double> buffer;
+    private Buffer<Integer> buffer;
     private Client client;
     private List<ApplianceGUI> appliances;
     final private int xLocationStart = 1030;
@@ -51,7 +51,7 @@ public class Controller { // commit test
                 totalConsumption += client.getCurrentConsumption();
             }
 
-            buffer.put((double) totalConsumption);
+            buffer.put(totalConsumption);
 
             try {
                 Thread.sleep(1000);
