@@ -1,14 +1,15 @@
 package Client;
 
 import se.mau.DA343A.VT25.projekt.Buffer;
+import se.mau.DA343A.VT25.projekt.net.SecurityTokens;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 
@@ -19,12 +20,14 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
     private String applianceName;
     private int maxPowerConsumption;
     private Socket socket;
-    private ObjectOutputStream outputStream;
+    private DataOutputStream outputStream;
+    private SecurityTokens securityTokens;
 
     public SmartPlugClient(String applianceName, int maxPowerConsumption) {
         this.applianceName = applianceName;
         this.maxPowerConsumption = maxPowerConsumption;
         this.buffer = new Buffer<>();
+        this.securityTokens = new SecurityTokens("UPTeam");
 
         setupFrame();
         setupComponents();
@@ -84,13 +87,19 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
     // TCP communication to send power consumption to the server
     private void connectToServer() {
         try {
-            socket = new Socket("localhost", 12345); // Just for test, need to be replaced with server IP and port
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            socket = new Socket("localhost", 8888); // server IP and port
+            outputStream = new DataOutputStream(socket.getOutputStream());
 
             // Send initial data (security token, appliance name, initial consumption)
-            outputStream.writeObject("SECURITY_TOKEN"); // Need to be replaced with actual token
-            outputStream.writeObject(applianceName);
-            outputStream.writeInt(0); // Initial consumption
+            String token = securityTokens.generateToken();
+            outputStream.writeUTF(token);
+            System.out.println("Sending token: " + token);
+            outputStream.writeUTF(applianceName);
+            System.out.println("Sending appliance name: " + applianceName);
+            outputStream.writeDouble(0.0); // Initial consumption
+            System.out.println("Sending Initial consumption ");
+            outputStream.flush();
+            System.out.println("Data sent!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -100,9 +109,9 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
         try {
             while (true) {
                 double powerConsumption = buffer.get(); // Block until data is available
-                outputStream.writeDouble(powerConsumption);
+                outputStream.writeDouble(powerConsumption); // Send powerConsumption
                 outputStream.flush();
-                //System.out.println("Sending power consumption: " + powerConsumption + "W for " + applianceName);
+                System.out.println("Sending power consumption: " + powerConsumption + "W for " + applianceName);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -113,9 +122,5 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void main(String[] args) {
-        new SmartPlugClient("LED Light Bulb", 1000);
     }
 }

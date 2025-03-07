@@ -1,9 +1,14 @@
 <component name="libraryTable">
   <library name="utvecklingsprojekt">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/Libraries/utvecklingsprojekt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../utvecklingsprojekt.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../utvecklingsprojekt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../utvecklingsprojekt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../utvecklingsprojekt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../jfreechart-1.5.5.jar!/" />
+    </SOURCES>
   </library>
 </component>
