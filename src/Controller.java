@@ -27,7 +27,7 @@ public class Controller { // commit test
         Thread thread = new Thread(client);
         thread.start();
         initializeAppliances();
-        getTotalConsumption();
+        startConsumptionThread();
 
     }
 
@@ -41,6 +41,11 @@ public class Controller { // commit test
         appliances.add(new ApplianceGUI("TV (LED)", 150, xLocationStart, yOffset));
         appliances.add(new ApplianceGUI("Refrigerator", 250, xLocationStart + xOffset, yOffset));
         appliances.add(new ApplianceGUI("Microwave Oven", 1000, xLocationStart + (xOffset * 2), yOffset));
+    }
+
+    private void startConsumptionThread() {
+        Thread consumptionThread = new Thread(this::getTotalConsumption);
+        consumptionThread.start();
     }
 
     private void getTotalConsumption() {

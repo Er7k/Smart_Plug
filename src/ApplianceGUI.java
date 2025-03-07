@@ -65,7 +65,7 @@ public class ApplianceGUI implements ChangeListener {
         }
     }
 
-    public double getCurrentConsumption() { // hämtar värdet för appliance's användning
+    public int getCurrentConsumption() { // hämtar värdet för appliance's användning
         return slider.getValue();
     }
 }

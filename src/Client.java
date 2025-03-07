@@ -64,7 +64,7 @@ public class Client implements Runnable {
     }
 
     private void connectToServer() throws IOException {
-        socket = new Socket("localhost", 8080);
+        socket = new Socket("localhost", 8081);
         outputStream = new DataOutputStream(socket.getOutputStream());
         inputStream = new DataInputStream(socket.getInputStream());
 

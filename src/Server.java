@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Server extends ListeningSocket {
 
-    public final static int port = 8080;
+    public final static int port = 8081;
     private final ServerGUI gui;
 
     public static void main(String[] args) {
