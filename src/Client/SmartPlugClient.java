@@ -5,15 +5,14 @@ import se.mau.DA343A.VT25.projekt.net.SecurityTokens;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-
-public class SmartPlugClient extends JFrame implements ChangeListener {
+public class SmartPlugClient extends JFrame implements PropertyChangeListener {
     private JSlider powerSlider;
     private JLabel applianceLabel;
     private Buffer<Double> buffer;
@@ -32,8 +31,6 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
         setupFrame();
         setupComponents();
         setVisible(true);
-        //repaint();
-        //revalidate();
 
         connectToServer();
         new Thread(this::sendPowerConsumptionToServer).start();
@@ -48,7 +45,6 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
     }
 
     private void setupComponents() {
-        // Power Slider
         powerSlider = new JSlider(JSlider.VERTICAL, 0, maxPowerConsumption, 0);
         powerSlider.setPreferredSize(new Dimension(80, 400));
         powerSlider.setMajorTickSpacing(100);
@@ -57,7 +53,14 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
         powerSlider.setPaintTicks(true);
         powerSlider.setPaintLabels(true);
         powerSlider.setBorder(new EmptyBorder(0, 0, 20, 0));
-        powerSlider.addChangeListener(this);
+
+        // changelistener to PropertyChangeListener as req 6
+        powerSlider.addChangeListener(e -> {
+            int value = powerSlider.getValue();
+            powerSlider.firePropertyChange("value", -1, value);
+        });
+
+        powerSlider.addPropertyChangeListener("value", this);
 
         // Appliance Label
         applianceLabel = new JLabel(getFormattedLabel(0), SwingConstants.CENTER);
@@ -67,11 +70,14 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
         add(applianceLabel, BorderLayout.NORTH);
     }
 
+    // changelistener to PropertyChangeListener as req 6
     @Override
-    public void stateChanged(ChangeEvent e) {
-        int value = powerSlider.getValue();
-        applianceLabel.setText(getFormattedLabel(value));
-        buffer.put((double) value);
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("value".equals(evt.getPropertyName())) {
+            int value = (int) evt.getNewValue();
+            applianceLabel.setText(getFormattedLabel(value));
+            buffer.put((double) value);
+        }
     }
 
     private String getFormattedLabel(int value) {
@@ -84,32 +90,40 @@ public class SmartPlugClient extends JFrame implements ChangeListener {
         return String.format("<html><div align='center'>%s<br>(W) usage: <font color='%s'>%d</font></div></html>", applianceName, color, value);
     }
 
-    // TCP communication to send power consumption to the server
     private void connectToServer() {
-        try {
-            socket = new Socket("localhost", 8888); // server IP and port
-            outputStream = new DataOutputStream(socket.getOutputStream());
+        while (true) {
+            try {
+                socket = new Socket("localhost", 8888);
+                outputStream = new DataOutputStream(socket.getOutputStream());
 
-            // Send initial data (security token, appliance name, initial consumption)
-            String token = securityTokens.generateToken();
-            outputStream.writeUTF(token);
-            System.out.println("Sending token: " + token);
-            outputStream.writeUTF(applianceName);
-            System.out.println("Sending appliance name: " + applianceName);
-            outputStream.writeDouble(0.0); // Initial consumption
-            System.out.println("Sending Initial consumption ");
-            outputStream.flush();
-            System.out.println("Data sent!");
-        } catch (IOException e) {
-            e.printStackTrace();
+                String token = securityTokens.generateToken();
+                outputStream.writeUTF(token);
+                System.out.println("Sending token: " + token);
+                outputStream.writeUTF(applianceName);
+                System.out.println("Sending appliance name: " + applianceName);
+                outputStream.writeDouble(0.0);
+                System.out.println("Sending Initial consumption ");
+                outputStream.flush();
+                System.out.println("Data sent!");
+                break; // Exit the loop if connection is successful
+            } catch (IOException e) {
+                System.err.println("Connection failed: " + e.getMessage());
+                System.err.println("Retrying in 5 seconds...");
+                try {
+                    Thread.sleep(5000); // Wait for 5 seconds before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Retry interrupted: " + ie.getMessage());
+                }
+            }
         }
     }
 
     private void sendPowerConsumptionToServer() {
         try {
             while (true) {
-                double powerConsumption = buffer.get(); // Block until data is available
-                outputStream.writeDouble(powerConsumption); // Send powerConsumption
+                double powerConsumption = buffer.get();
+                outputStream.writeDouble(powerConsumption);
                 outputStream.flush();
                 System.out.println("Sending power consumption: " + powerConsumption + "W for " + applianceName);
             }
