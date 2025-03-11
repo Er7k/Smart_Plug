@@ -14,6 +14,7 @@ public class SmartPlugServer {
     private final ApplianceConsumptionModel model = new ApplianceConsumptionModel();
     private final SecurityTokens securityTokens = new SecurityTokens("UPTeam");
     private final ServerGUI serverGUI;
+    private final ServerGuiAdapter serverGuiAdapter;
 
     public SmartPlugServer(){
         // Skapa och visa GUI:t
@@ -23,13 +24,13 @@ public class SmartPlugServer {
         } catch (InterruptedException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-
+        this.serverGuiAdapter = new ServerGuiAdapter(serverGUI);
         // Starta lyssnande socket
         int port = 8888;
         ListeningSocket listeningSocket = new ListeningSocket(port) {
             @Override
             public ListeningSocketConnectionWorker createNewConnectionWorker() {
-                return new ApplianceConnectionWorker(model, securityTokens);
+                return new ApplianceConnectionWorker(model, securityTokens,serverGuiAdapter);
             }
         };
         new Thread(listeningSocket).start();
@@ -40,9 +41,10 @@ public class SmartPlugServer {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(() -> {
-                    //System.out.println(model.getTotalConsumption());
+                    long unixTime = System.currentTimeMillis() / 1000; // Convert milliseconds to seconds
+                    double totalConsumption = model.getTotalConsumption();
                     // Uppdatera total förbrukning i GUI:t
-                    serverGUI.setTotalConsumption(model.getTotalConsumption());
+                    serverGuiAdapter.setTotalConsumption(totalConsumption, unixTime);
                 });
             }
         }, 0, 1000); // Uppdatera varje sekund
