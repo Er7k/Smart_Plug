@@ -18,7 +18,8 @@ public class SmartPlugServer {
     private final SecurityTokens securityTokens = new SecurityTokens("UPTeam");
     private final ServerGUI serverGUI;
     private final LinkedList<SimpleEntry<Long, Double>> history = new LinkedList<>();
-    private final LiveXYSeries<Double> liveXYSeries = new LiveXYSeries<>("Energy Consumption", 20000);
+    private LiveXYSeries<Double> liveXYSeries = new LiveXYSeries<>("Energy Consumption", 200);
+    private boolean liveXYSeriesAdded = false;
 
     public SmartPlugServer() {
         // Skapa och visa GUI:t
@@ -64,15 +65,14 @@ public class SmartPlugServer {
     }
 
     private void updateHistoryChart() {
-        // Clear the series only when starting fresh or if needed
+        if (!liveXYSeriesAdded) {
+            serverGUI.addSeries(liveXYSeries);
+            liveXYSeriesAdded = true;
+        }
 
-        // Add historical data to the series (this will show the last 20 seconds)
         for (SimpleEntry<Long, Double> entry : history) {
             liveXYSeries.addValue(entry.getKey().doubleValue(), entry.getValue());
         }
-
-        // Add the series to the GUI
-        serverGUI.addSeries(liveXYSeries);
     }
 
 

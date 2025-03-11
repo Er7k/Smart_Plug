@@ -21,10 +21,14 @@ public class SmartPlugClient extends JFrame implements PropertyChangeListener {
     private Socket socket;
     private DataOutputStream outputStream;
     private SecurityTokens securityTokens;
+    private int xLocation;
+    private int yLocation;
 
-    public SmartPlugClient(String applianceName, int maxPowerConsumption) {
+    public SmartPlugClient(String applianceName, int maxPowerConsumption, int xLocation, int yLocation) {
         this.applianceName = applianceName;
         this.maxPowerConsumption = maxPowerConsumption;
+        this.xLocation = xLocation;
+        this.yLocation = yLocation;
         this.buffer = new Buffer<>();
         this.securityTokens = new SecurityTokens("UPTeam");
 
@@ -41,7 +45,7 @@ public class SmartPlugClient extends JFrame implements PropertyChangeListener {
         setSize(200, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setLocation(1100, 0);
+        setLocation(xLocation, yLocation);
     }
 
     private void setupComponents() {
