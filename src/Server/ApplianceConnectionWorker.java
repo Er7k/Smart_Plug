@@ -1,8 +1,10 @@
 package Server;
 
+import se.mau.DA343A.VT25.projekt.ServerGUI;
 import se.mau.DA343A.VT25.projekt.net.ListeningSocketConnectionWorker;
 import se.mau.DA343A.VT25.projekt.net.SecurityTokens;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.SocketAddress;
 
@@ -10,10 +12,13 @@ public class ApplianceConnectionWorker implements ListeningSocketConnectionWorke
 
     private final ApplianceConsumptionModel model;
     private final SecurityTokens securityTokens;
+    private final ServerGUI serverGUI;
 
-    public ApplianceConnectionWorker(ApplianceConsumptionModel model, SecurityTokens securityTokens) {
+    public ApplianceConnectionWorker(ApplianceConsumptionModel model, SecurityTokens securityTokens,
+                                     ServerGUI serverGUI) {
         this.model = model;
         this.securityTokens = securityTokens;
+        this.serverGUI = serverGUI;
     }
 
     @Override
@@ -35,12 +40,14 @@ public class ApplianceConnectionWorker implements ListeningSocketConnectionWorke
 
             // Uppdatera modellen med initial förbrukning
             model.updateConsumption(applianceName, initialConsumption);
+            SwingUtilities.invokeLater(() -> serverGUI.addLogMessage("Appliance " + applianceName + " consumption: " + initialConsumption + " W"));
 
             // Läs och uppdatera förbrukning i en loop
             while (true) {
                 double consumption = in.readDouble();
                 System.out.println(consumption);
                 model.updateConsumption(applianceName, consumption);
+                SwingUtilities.invokeLater(() -> serverGUI.addLogMessage("Updated " + applianceName + " consumption: " + consumption + " W"));
             }
 
         } catch (IOException e) {

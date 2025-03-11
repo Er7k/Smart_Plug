@@ -14,7 +14,6 @@ public class SmartPlugServer {
     private final ApplianceConsumptionModel model = new ApplianceConsumptionModel();
     private final SecurityTokens securityTokens = new SecurityTokens("UPTeam");
     private final ServerGUI serverGUI;
-    private final ServerGuiAdapter serverGuiAdapter;
 
     public SmartPlugServer(){
         // Skapa och visa GUI:t
@@ -24,13 +23,13 @@ public class SmartPlugServer {
         } catch (InterruptedException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        this.serverGuiAdapter = new ServerGuiAdapter(serverGUI);
+
         // Starta lyssnande socket
         int port = 8888;
         ListeningSocket listeningSocket = new ListeningSocket(port) {
             @Override
             public ListeningSocketConnectionWorker createNewConnectionWorker() {
-                return new ApplianceConnectionWorker(model, securityTokens,serverGuiAdapter);
+                return new ApplianceConnectionWorker(model, securityTokens,serverGUI);
             }
         };
         new Thread(listeningSocket).start();
@@ -41,10 +40,15 @@ public class SmartPlugServer {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(() -> {
-                    long unixTime = System.currentTimeMillis() / 1000; // Convert milliseconds to seconds
-                    double totalConsumption = model.getTotalConsumption();
+                    long unixTime = System.currentTimeMillis()/ 1000;
+                    double totalConsumption = model.getTotalConsumption() / 1000 ;
+
+                    System.out.println(unixTime + " - Total Consumption: " + totalConsumption + " kWh");
+
+
+                    //System.out.println(model.getTotalConsumption());
                     // Uppdatera total förbrukning i GUI:t
-                    serverGuiAdapter.setTotalConsumption(totalConsumption, unixTime);
+                    serverGUI.setTotalConsumption(model.getTotalConsumption());
                 });
             }
         }, 0, 1000); // Uppdatera varje sekund
